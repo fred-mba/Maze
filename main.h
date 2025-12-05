@@ -1,8 +1,14 @@
 #ifndef _DEMO_H_
 #define _DEMO_H_
 
+/* screen dimension constants */
+const int SCREEN_WIDTH = 640;
+const int SCREEN_HEIGHT = 480;
+
+/*
 #define SCREEN_WIDTH 1024
 #define SCREEN_HEIGHT 510
+*/
 #define MAP_WIDTH 9
 #define MAP_LENGTH 12
 #define CELL_SIZE 16
@@ -15,6 +21,7 @@
 #include <stdio.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_timer.h>
+#include <stdbool.h>
 #include <math.h>
 
 typedef struct
@@ -45,5 +52,9 @@ void create_player(SDL_Instance *instance, Player *player);
 int collision_detection(int x, int y);
 void render_3d_walls(SDL_Instance *instance, Player *player, Light *lights, int num_lights);
 float calculate_light_intensity(float x, float y, Light *lights, int num_lights);
+
+bool initialize_sdl(void);
+bool loading_media(void);
+void close_sdl(void);
 
 #endif
