@@ -22,6 +22,13 @@
 
 typedef struct
 {
+	SDL_Texture *m_texture;
+	int width;
+	int height;
+} _Texture;
+
+typedef struct
+{
 	SDL_Window *window;
 	SDL_Renderer *renderer;
 } SDL_Instance;
@@ -56,6 +63,8 @@ extern SDL_Surface *currentSurface;
 extern SDL_Surface *KeyPressSurfaces[ KEY_PRESS_SURFACE_TOTAL ];
 extern SDL_Renderer *renderer;
 extern SDL_Texture *texture;
+extern _Texture *foo_texture;
+extern _Texture *bg_texture;
 
 extern int map[MAP_WIDTH][MAP_LENGTH];
 
@@ -80,5 +89,9 @@ void draw_blue_horizontal_line(void);
 void vertical_dotted_line(void);
 void top_left_corner_viewport(void);
 void top_right_corner_viewport(void);
+void bottom_centre_viewport(void);
+bool load_from_file(_Texture *T, const char *str_path);
+void free_texture(_Texture *T);
+void render(SDL_Renderer *R, _Texture *T, int x, int y);
 
 #endif
