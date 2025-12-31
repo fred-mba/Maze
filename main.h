@@ -67,6 +67,7 @@ extern _Texture *foo_texture;
 extern _Texture *bg_texture;
 extern SDL_Rect *sprite_clips[ 4 ];
 extern _Texture *ss_texture;
+extern _Texture *mod_texture;
 
 extern int map[MAP_WIDTH][MAP_LENGTH];
 
@@ -84,7 +85,7 @@ bool load_media_surface(void);
 void close_sdl(void);
 SDL_Surface *load_surface(const char *surface_path);
 SDL_Texture *load_texture(const char *image_path);
-bool load_media_texture();
+bool load_media_texture(void);
 void render_red_filled_quad(void);
 void render_green_outlined_quad(void);
 void draw_blue_horizontal_line(void);
@@ -94,6 +95,11 @@ void top_right_corner_viewport(void);
 void bottom_centre_viewport(void);
 bool load_from_file(_Texture *T, const char *str_path);
 void free_texture(_Texture *T);
-void render(SDL_Renderer *R, _Texture *T, int x, int y, SDL_Rect *clip);
+void render(SDL_Renderer *R, _Texture *T, int x, int y);
+void set_color(uint8_t red, uint8_t green, uint8_t blue);
+void set_color(uint8_t red, uint8_t green, uint8_t blue);
+void set_blend_mode(SDL_Texture *Texture, SDL_BlendMode blending);
+void set_alpha(uint8_t alpha);
+
 
 #endif

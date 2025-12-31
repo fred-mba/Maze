@@ -1,13 +1,22 @@
 #include "main.h"
 
 _Texture *ss_texture = NULL;
-SDL_Rect *sprite_clips[ 4 ];
-
+SDL_Rect *sprite_clips[4];
+_Texture *mod_texture;
+/**
+ * load_from_file - loads image texture.
+ *
+ *@T: image texture
+ *
+ *@str_path: image path
+ *
+ *Return: bool.
+ */
 bool load_from_file(_Texture *T, const char *str_path)
 {
 	SDL_Texture *new_texture = NULL;
 	SDL_Surface *surface = IMG_Load(str_path);
-	
+
 	if (!surface)
 		printf("Unable to load image %s! SDL_image Error: %s\n",
 				str_path, IMG_GetError());
@@ -41,14 +50,9 @@ void free_texture(_Texture *T)
 	}
 }
 
-void render(SDL_Renderer *R, _Texture *T, int x, int y, SDL_Rect *clip)
+void render(SDL_Renderer *R, _Texture *T, int x, int y)
 {
 	SDL_Rect render_quad = { x, y, T->width, T->height };
-	if (clip)
-	{
-		render_quad.w = clip->w;
-		render_quad.h = clip->h;
-	}
-	SDL_RenderCopy(R, T->m_texture, clip, &render_quad);
+	SDL_RenderCopy(R, T->m_texture, NULL, &render_quad);
 }
 

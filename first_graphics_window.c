@@ -21,12 +21,9 @@ int main(void)
 	else
 	{
 		/* Allocate memory for texture structs */
-		ss_texture = malloc(sizeof(_Texture));
-		for (int m = 0; m < 4; m++)
-		{
-			sprite_clips[ m ] = (SDL_Rect *)malloc(sizeof(SDL_Rect));
-		}
-
+		bg_texture = malloc(sizeof(_Texture));
+		mod_texture = malloc(sizeof(_Texture));
+		
 		if (!load_media_texture())
 		{
 			printf("Failed to load media!\n");
@@ -37,6 +34,9 @@ int main(void)
 			bool quit = false;
 			/* event handler */
 			SDL_Event event_e;
+			/* modulation components */
+			uint8_t a = 255;
+
 			/* while application is running */
 			while (!quit)
 			{
@@ -45,21 +45,31 @@ int main(void)
 					/* user requests quit */
 					if (event_e.type == SDL_QUIT)
 						quit = true;
+					else if (event_e.type == SDL_KEYDOWN)
+					{
+						if (event_e.key.keysym.sym == SDLK_w)
+						{
+							if (a + 32 > 255)
+								a = 255;
+							else
+								a += 32;
+						}
+						else if (event_e.key.keysym.sym == SDLK_s)
+						{
+							if (a - 32 < 0)
+								a = 0;
+							else
+								a -= 32;
+						}
+					}
 				}
 				SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
 				SDL_RenderClear(renderer);
 
-				render(renderer, ss_texture, 0, 0, sprite_clips[ 0 ]);
-				render(renderer, ss_texture,
-						SCREEN_WIDTH - sprite_clips[ 1 ]->w, 0,
-						sprite_clips[ 1 ]);
-				render(renderer, ss_texture, 0,
-						SCREEN_HEIGHT - sprite_clips[ 2 ]->h,
-						sprite_clips[ 2 ]);
-				render(renderer, ss_texture,
-						SCREEN_WIDTH - sprite_clips[ 3 ]->h,
-						SCREEN_HEIGHT - sprite_clips[ 3 ]->w,
-						sprite_clips[ 3 ]);
+				render(renderer, bg_texture, 0, 0);
+
+				set_alpha(a);
+				render(renderer, mod_texture, 0, 0);
 
 				SDL_RenderPresent(renderer);
 			}
@@ -130,7 +140,7 @@ bool initialize_sdl(void)
 }
 
 /**
- * loading_media - loads media to render.
+ * load_media_surface - loads media to render.
  *
  * Return: true or false
  */
@@ -138,6 +148,7 @@ bool load_media_surface(void)
 {
 	/* loading success flag */
 	bool success = true;
+
 	return (success);
 }
 
@@ -148,14 +159,20 @@ bool load_media_surface(void)
  */
 void close_sdl(void)
 {
-	/* Free structs and texture */
-
-	/* Destroy window */
+	/* Free textures and structs */
+	free_texture(ss_texture);
+	for (int m = 0; m < 4; m++)
+	{
+		free(sprite_clips[m]);
+	}
+	/* deallocate surface */
+	SDL_DestroyTexture(texture);
+	texture = NULL;
+	/* destroy window */
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
 	window = NULL;
 	renderer = NULL;
-
 	/* quit sdl subsytems */
 	IMG_Quit();
 	SDL_Quit();

@@ -1,4 +1,6 @@
 #include "main.h"
+_Texture *bg_texture = NULL;
+
 /**
  * load_texture - loads image texture
  *
@@ -41,33 +43,27 @@ bool load_media_texture(void)
 	/* Loading success flag */
 	bool success = true;
 	/* Load PNG texture */
-	bool _ss = load_from_file(ss_texture, "10_color_keying/dots.png");
-	if (!_ss)
+	if (!load_from_file(mod_texture, "13_alpha_blending/fadeout.png"))
 	{
-		printf("Failed to load sprite sheet texture\n");
+		printf("Failed to load front texture\n");
 		success = false;
 	}
 	else
+		set_blend_mode(mod_texture->m_texture, SDL_BLENDMODE_BLEND);
+	if (!load_from_file(bg_texture, "13_alpha_blending/fadein.png"))
 	{
-		sprite_clips[ 0 ]->x = 0;
-		sprite_clips[ 0 ]->y = 0;
-		sprite_clips[ 0 ]->w = 100;
-		sprite_clips[ 0 ]->h = 100;
-
-		sprite_clips[ 1 ]->x = 100;
-		sprite_clips[ 1 ]->y = 0;
-		sprite_clips[ 1 ]->w = 100;
-		sprite_clips[ 1 ]->h = 100;
-
-		sprite_clips[ 2 ]->x = 0;
-		sprite_clips[ 2 ]->y = 100;
-		sprite_clips[ 2 ]->w = 100;
-		sprite_clips[ 2 ]->h = 100;
-
-		sprite_clips[ 3 ]->x = 100;
-		sprite_clips[ 3 ]->y = 100;
-		sprite_clips[ 3 ]->w = 100;
-		sprite_clips[ 3 ]->h = 100;
+		printf("Failed to load background texture\n");
+		success = false;
 	}
-	return success;
+	return (success);
+}
+
+/**
+ * set_color - modulate color
+ *
+ *Return: void.
+ */
+void set_color(uint8_t red, uint8_t green, uint8_t blue)
+{
+	SDL_SetTextureColorMod(mod_texture->m_texture, red, green, blue);
 }
