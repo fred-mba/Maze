@@ -22,12 +22,12 @@ int main(void)
 
 		/* Allocate memory for texture structs */
 		ss_texture = malloc(sizeof(_Texture));
-		for (int m = 0; m < WALKING_ANIMATION_FRAMES; m++)
+		for (int m = 0; m < BS_TOTAL; m++)
 		{
-			sprite_clips[m] = (SDL_Rect *)malloc(sizeof(SDL_Rect));
+			sprite_clips[m] = malloc(sizeof(SDL_Rect));
 		}
-		
-		if (!load_media_texture())
+	
+		if (!load_media_surface())
 		{
 			printf("Failed to load media!\n");
 		}
@@ -35,10 +35,11 @@ int main(void)
 		{
 			/* window to stay up */
 			bool quit = false;
+			/* Flip type*/
+			double degrees = 0;
+			SDL_RendererFlip flip_type = SDL_FLIP_NONE;
 			/* event handler */
 			SDL_Event event_e;
-			/* current animation frame */
-			int frame = 0;
 			/* while application is running */
 			while (!quit)
 			{
@@ -47,19 +48,20 @@ int main(void)
 					/* user requests quit */
 					if (event_e.type == SDL_QUIT)
 						quit = true;
+					/* handle buttons events */
+					for (int y = 0; y < TOTAL_BUTTONS; y++)
+					{
+						buttons[y].handle_event(&event_e)
+					}
 				}
 				SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
 				SDL_RenderClear(renderer);
-
-				SDL_Rect *current_clip = sprite_clips[frame / 4];
-				render(renderer, ss_texture,
-						(SCREEN_WIDTH - current_clip->w) / 2,
-						(SCREEN_HEIGHT - current_clip->h) / 2,
-						current_clip);
+				/* render buttons */
+				for (int x = 0; x < TOTAL_BUTTONS; x++)
+				{
+					buttons[x].button_render();
+				}
 				SDL_RenderPresent(renderer);
-				frame++;
-				if (frame / 4 >= WALKING_ANIMATION_FRAMES)
-					frame = 0;
 			}
 		}
 		SDL_Log("Event queue is empty.");
@@ -121,6 +123,12 @@ bool initialize_sdl(void)
 							"SDL_image Error: %s\n", IMG_GetError());
 					success = false;
 				}
+				if (TTF_Init() == -1)
+				{
+					printf("SDL_ttf could not initialize! SDL_ttf Error: %s\n",
+							TTF_GetError());
+					success = false;
+				}
 			}
 		}
 	}
@@ -137,6 +145,29 @@ bool load_media_surface(void)
 	/* loading success flag */
 	bool success = true;
 
+	if (!load_from_file(ss_texture, "17_mouse_events/button.png"))
+	{
+		printf("Failed to load button sprite texture!\n");
+		success = false;
+	}
+
+	else
+	{
+		/* set sprites */
+		for (int i = 0; i < BS_TOTAL; i++)
+		{
+			sprite_clips[i].x = 0;
+			sprite_clips[i].y = i * 200;
+			sprite_clips[i].w = BUTTON_WIDTH;
+			sprite_clips[i].h = BUTTON_HEIGHT;
+		}
+		/* set buttons in corners */
+		buttons[0].set_position(0, 0)
+		buttons[1].set_position(SCREEN_WIDTH - BUTTON_WIDTH, 0);
+		buttons[2].set_position(0, SCREEN_HEIGHT - BUTTON_HEIGHT);
+		buttons[3].set_position(SCREEN_WIDTH - BUTTON_WIDTH,
+								SCREEN_HEIGHT - BUTTON_HEIGHT);
+	}
 	return (success);
 }
 
@@ -161,7 +192,11 @@ void close_sdl(void)
 	SDL_DestroyWindow(window);
 	window = NULL;
 	renderer = NULL;
+
+	TTF_CloseFont(font);
+	font = NULL;
 	/* quit sdl subsytems */
+	TTF_Quit();
 	IMG_Quit();
 	SDL_Quit();
 }
